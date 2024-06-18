@@ -11,6 +11,10 @@ source MuJoCoSandBox/bin/activate
 # Install the dependencies from requirements.txt
 pip install -r requirements.txt
 
+# Configure git user name and email
+git config --global user.name "Dhruv Thanki"
+git config --global user.email "thankid@udel.edu"
+
 # Create a folder for submodules
 mkdir -p submodules
 
