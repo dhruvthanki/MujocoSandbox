@@ -13,8 +13,8 @@ class WholeBodyController:
         self.mass_matrix = np.zeros((self.model.nv, self.model.nv))
         self.jac_pos = np.zeros((3, self.model.nv))
         self.jac_pos_plus = np.zeros((3, self.model.nv))
-        self.kp_pos = 10
-        self.kd_pos = 1
+        self.kp_pos = 1000
+        self.kd_pos = 10
 
         self.osc_qp = self._formulate_qp()
 
@@ -42,7 +42,7 @@ class WholeBodyController:
 
         position_cost = cp.sum_squares(site_pos_ddot_des - site_pos_ddot)
         control_effort_cost = cp.sum_squares(self.vu)
-        total_cost = position_cost + control_effort_cost
+        total_cost = position_cost + 0*control_effort_cost
 
         objective = cp.Minimize(total_cost)
 
@@ -63,7 +63,7 @@ class WholeBodyController:
         self.pC_terms.value = self.data.qfrc_bias
 
         self.pSitePos.value = self.data.site_xpos[self.end_effector_id]
-        self.pSitePosDes.value = np.array([0.5, 0.5, 0.5])
+        self.pSitePosDes.value = np.array([6.63291267e-01, 1.61385684e-04, 2.62866404e-01])
         self.pSiteVelDes.value = np.zeros(3)
         self.pSiteAccDes.value = np.zeros(3)
 

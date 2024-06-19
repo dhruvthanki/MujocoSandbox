@@ -12,12 +12,15 @@ class Simulation:
         self.duration = duration
         self.model = mujoco.MjModel.from_xml_path(model_path)
         self.data = mujoco.MjData(self.model)
+        self.data.qpos = self.model.keyframe('home').qpos
+        mujoco.mj_forward(self.model, self.data)
         if pause_at_start:
             keyboard.add_hotkey('space', self.toggle_pause)
         else:
             self.toggle_pause()
         self.viewer = mujoco.viewer.launch_passive(self.model, self.data)
         self.controller = WholeBodyController(model_path)
+        print(self.data.site_xpos[self.controller.end_effector_id])
     
     def toggle_pause(self):
         self.is_paused = not self.is_paused
@@ -32,8 +35,12 @@ class Simulation:
             step_start = time.time()
 
             if not self.is_paused:
-                self.data.ctrl = self.controller.compute_joint_torques(self.data.qpos, self.data.qvel)
+                try :
+                    self.data.ctrl = self.controller.compute_joint_torques(self.data.qpos, self.data.qvel)
+                except Exception as e:
+                    print(e)
                 mujoco.mj_step(self.model, self.data)
+                print(self.data.site_xpos[self.controller.end_effector_id])
 
             with self.viewer.lock():
                 self.viewer.opt.flags[mujoco.mjtVisFlag.mjVIS_CONTACTPOINT] = int(self.data.time % 2)
