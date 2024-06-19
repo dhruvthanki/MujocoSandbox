@@ -4,6 +4,8 @@ import mujoco
 import mujoco.viewer
 import keyboard
 
+from wholeBodyController import WholeBodyController
+
 class Simulation:
     def __init__(self, model_path, duration=30):
         self.is_paused = True
@@ -12,6 +14,7 @@ class Simulation:
         self.data = mujoco.MjData(self.model)
         keyboard.add_hotkey('space', self.toggle_pause)
         self.viewer = mujoco.viewer.launch_passive(self.model, self.data)
+        self.controller = WholeBodyController(model_path)
     
     def toggle_pause(self):
         self.is_paused = not self.is_paused
@@ -26,6 +29,7 @@ class Simulation:
             step_start = time.time()
 
             if not self.is_paused:
+                self.data.ctrl = self.controller.step(self.data.qpos, self.data.qvel)
                 mujoco.mj_step(self.model, self.data)
 
             with self.viewer.lock():
@@ -43,5 +47,5 @@ class Simulation:
             print("Viewer closed.")
 
 if __name__ == "__main__":
-    sim = Simulation('submodules/mujoco_menagerie/unitree_g1/scene.xml')
+    sim = Simulation('submodules/mujoco_menagerie/franka_emika_panda/scene.xml')
     sim.run()
