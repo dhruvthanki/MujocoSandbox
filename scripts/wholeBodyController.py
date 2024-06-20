@@ -13,8 +13,8 @@ class WholeBodyController:
         self.kp_pos = 50
         self.kd_pos = 10
 
-        self.kp_ori = 50
-        self.kd_ori = 10
+        self.kp_ori = 700
+        self.kd_ori = 50
 
         self.kp_joint = 500
         self.kd_joint = (np.sqrt(self.kp_joint)/2) + 0
@@ -39,7 +39,7 @@ class WholeBodyController:
 
         joint_pos_ddot_des = - self.kd_joint * self.pdq + self.kp_joint * (self.dynamic_model.get_keyframe('home').qpos - self.pq)
         joint_position_cost = cp.sum_squares(joint_pos_ddot_des - self.vddq)
-        total_cost += 0.0001*joint_position_cost
+        # total_cost += 0.001*joint_position_cost
 
         # End effector position
         self.pSitePos = cp.Parameter(3, name='site_pos')
@@ -68,11 +68,11 @@ class WholeBodyController:
         site_ori_ddot_des = self.pSiteAngularAccDes + self.kd_ori * (self.pSiteAngularVelDes - self.pJacOri @ self.pdq) + self.kp_ori * self.pSiteOriDiff
         site_ori_ddot = self.pJacOri @ self.vddq + self.jac_ori_dot @ self.pdq
         orientation_cost = cp.sum_squares(site_ori_ddot_des - site_ori_ddot)
-        total_cost += orientation_cost
+        total_cost += 5*orientation_cost
 
         # Control effort cost
         control_effort_cost = cp.sum_squares(self.vu)
-        total_cost += 0.000001*control_effort_cost
+        # total_cost += control_effort_cost
 
         objective = cp.Minimize(total_cost)
 
@@ -100,5 +100,5 @@ class WholeBodyController:
 
         self.osc_qp.solve(warm_start=True, solver=cp.ECOS, verbose=False)
 
-        # print(self.osc_qp.status)
+        print(self.osc_qp.status)
         return self.vu.value.squeeze()
