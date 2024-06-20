@@ -18,30 +18,24 @@ This project requires a Python virtual environment to manage dependencies. Follo
 
 2. **Create and set up the virtual environment**
 
-    Run the provided setup script to create a virtual environment named `G1-SRBD-MPC` and install all dependencies from `requirements.txt`.
+    Run the provided setup script to create a virtual environment named `MuJoCoSandBox` and install all dependencies from `requirements.txt`.
 
     ```sh
-    ./setup_env.sh
+    ./buildEnv.sh
     ```
 
-    **Note:** Make sure the script `setup_env.sh` has execution permissions. If not, you can add execute permissions with:
+    **Note:** Make sure the script `buildEnv.sh` has execution permissions. If not, you can add execute permissions with:
 
     ```sh
-    chmod +x setup_env.sh
+    chmod +x buildEnv.sh
     ```
 
 3. **Activate the virtual environment**
 
-    - On Windows:
+    - On Linux:
 
       ```sh
-      G1-SRBD-MPC\Scripts\activate
-      ```
-
-    - On macOS and Linux:
-
-      ```sh
-      source G1-SRBD-MPC/bin/activate
+      source MuJoCoSandBox/bin/activate
       ```
 
 4. **Install dependencies**
@@ -59,11 +53,3 @@ This project requires a Python virtual environment to manage dependencies. Follo
     ```sh
     deactivate
     ```
-
-## Additional Information
-
-- **Updating dependencies:** If you need to add new packages, install them using `pip` and update the `requirements.txt` file:
-
-  ```sh
-  pip install <package-name>
-  pip freeze > requirements.txt
