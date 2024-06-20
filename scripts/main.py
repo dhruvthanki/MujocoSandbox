@@ -13,7 +13,7 @@ class Simulation(PeriodicExecutor):
         self.duration = duration
         self.model = mujoco.MjModel.from_xml_path(model_path)
         self.data = mujoco.MjData(self.model)
-        # self.data.qpos = self.model.keyframe('home').qpos
+        self.data.qpos = self.model.keyframe('home').qpos
         mujoco.mj_forward(self.model, self.data)
         if pause_at_start:
             keyboard.add_hotkey('space', self.toggle_pause)
@@ -39,7 +39,8 @@ class Simulation(PeriodicExecutor):
                 print(e)
             mujoco.mj_step(self.model, self.data)
             
-            # print(self.data.site_xpos[self.controller.end_effector_id])
+            # print(self.data.site_xpos[self.controller.dynamic_model.end_effector_id])
+            # print(self.controller.dynamic_model.get_end_effector_ori())
             # print(self.data.qpos)
 
             with self.viewer.lock():
