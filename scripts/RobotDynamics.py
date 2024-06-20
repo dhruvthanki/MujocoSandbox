@@ -46,10 +46,12 @@ class RobotDynamics:
         return quat
     
     def get_site_jacobian(self):
+        '''Returns the position and orientation geometric jacobian of the end effector'''
         mujoco.mj_jacSite(self.model, self.data, self.jac_pos, self.jac_ori, self.end_effector_id)
         return self.jac_pos, self.jac_ori
     
     def get_site_jacobian_plus(self):
+        '''Returns the position and orientation geometric jacobian of the end effector at the next time step'''
         self.data2.qpos = self.data.qpos
         self.data2.qvel = self.data.qvel
         mujoco.mj_integratePos(self.model, self.data2.qpos, self.data2.qvel, self.model.opt.timestep)

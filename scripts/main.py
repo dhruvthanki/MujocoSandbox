@@ -62,7 +62,7 @@ class Simulation(PeriodicExecutor):
         self.join()
 
 if __name__ == "__main__":
-    pause_at_start = False
+    pause_at_start = True
     # model_path = 'submodules/mujoco_menagerie/kuka_iiwa_14/scene.xml'
     # model_path = 'models/DoublePendulum.xml'
     model_path = 'models/ur5/ur5.xml'
