@@ -13,7 +13,7 @@ class WholeBodyController:
         # self.kd_pos = 10
 
         self.kp_joint = 500
-        self.kd_joint = (np.sqrt(self.kp_joint)/2)
+        self.kd_joint = (np.sqrt(self.kp_joint)/2) + 0
 
         self.osc_qp = self._formulate_qp()
 
@@ -24,6 +24,7 @@ class WholeBodyController:
         self.vu = cp.Variable(self.nv, name='u')
 
         constraints = [self.pH @ self.vddq + self.pC_terms == self.vu]
+        print(self.dynamic_model.get_joint_torque_limits())
         constraints += [self.vu <= self.dynamic_model.get_joint_torque_limits(), self.vu >= -self.dynamic_model.get_joint_torque_limits()]
 
         total_cost = 0
@@ -31,7 +32,7 @@ class WholeBodyController:
         self.pq = cp.Parameter(self.nq, name='q')
         self.pdq = cp.Parameter(self.nv, name='dq')
 
-        joint_pos_ddot_des = -self.kd_joint * self.pdq + self.kp_joint * (self.dynamic_model.get_keyframe('home').qpos - self.pq)
+        joint_pos_ddot_des = - self.kd_joint * self.pdq + self.kp_joint * (self.dynamic_model.get_keyframe('home').qpos - self.pq)
         joint_position_cost = cp.sum_squares(joint_pos_ddot_des - self.vddq)
         total_cost += joint_position_cost
 
@@ -49,8 +50,8 @@ class WholeBodyController:
         # position_cost = cp.sum_squares(site_pos_ddot_des - site_pos_ddot)
         # total_cost += position_cost
 
-        # control_effort_cost = cp.sum_squares(self.vu)
-        # total_cost += control_effort_cost
+        control_effort_cost = cp.sum_squares(self.vu)
+        total_cost += 0.000001*control_effort_cost
 
         objective = cp.Minimize(total_cost)
 
@@ -81,4 +82,6 @@ class WholeBodyController:
 
         self.osc_qp.solve(warm_start=True, solver=cp.ECOS, verbose=False)
 
+        # print(self.vu.value.squeeze())
+        print(self.osc_qp.status)
         return self.vu.value.squeeze()

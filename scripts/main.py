@@ -1,13 +1,14 @@
 import mujoco
 import mujoco.viewer
 import keyboard
+from overrides import overrides
 
 from wholeBodyController import WholeBodyController
 from PeriodicExecutor import PeriodicExecutor
 
 class Simulation(PeriodicExecutor):
     def __init__(self, model_path, pause_at_start, duration=30):
-        super().__init__(frequency=500)
+        super().__init__(frequency=100)
         self.is_paused = True
         self.duration = duration
         self.model = mujoco.MjModel.from_xml_path(model_path)
@@ -28,17 +29,18 @@ class Simulation(PeriodicExecutor):
         else:
             print("Simulation resumed.")
     
+    @overrides
     def periodic_function(self):
         if self.viewer.is_running() and not self.is_paused:
             try:
-                self.data.ctrl = -self.controller.kd_joint * self.data.qvel + self.controller.kp_joint * (self.model.keyframe('home').qpos - self.data.qpos)
-                # self.data.ctrl = self.controller.compute_joint_torques(self.data.qpos, self.data.qvel)
+                # self.data.ctrl = -0.1 * self.data.qvel + 100 * (self.model.keyframe('home').qpos - self.data.qpos)
+                self.data.ctrl = self.controller.compute_joint_torques(self.data.qpos, self.data.qvel)
             except Exception as e:
                 print(e)
             mujoco.mj_step(self.model, self.data)
             
             # print(self.data.site_xpos[self.controller.end_effector_id])
-            print(self.data.qpos)
+            # print(self.data.qpos)
 
             with self.viewer.lock():
                 self.viewer.opt.flags[mujoco.mjtVisFlag.mjVIS_CONTACTPOINT] = int(self.data.time % 2)
@@ -46,7 +48,8 @@ class Simulation(PeriodicExecutor):
             self.viewer.sync()
         elif not self.viewer.is_running():
             self.stop()
-
+    
+    @overrides
     def stop(self):
         super().stop()
         if self.viewer is not None:
@@ -60,7 +63,8 @@ class Simulation(PeriodicExecutor):
 if __name__ == "__main__":
     pause_at_start = False
     # model_path = 'submodules/mujoco_menagerie/kuka_iiwa_14/scene.xml'
-    model_path = 'models/DoublePendulum.xml'
+    # model_path = 'models/DoublePendulum.xml'
+    model_path = 'models/ur5/ur5.xml'
     sim = Simulation(model_path, pause_at_start)
     sim.start()
     try:

@@ -6,7 +6,6 @@ class RobotDynamics:
         self.model = mujoco.MjModel.from_xml_path(model_path)
         self.data = mujoco.MjData(self.model)
         self.mass_matrix = np.zeros((self.model.nv, self.model.nv))
-        self.ctrl_range = self.model.actuator_ctrlrange[:, 1]
         # self.end_effector_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_SITE, "attachment_site")
         # self.jac_pos = np.zeros((3, self.model.nv))
         # self.data2 = mujoco.MjData(self.model)
@@ -29,7 +28,7 @@ class RobotDynamics:
         return self.model.nv
     
     def get_joint_torque_limits(self):
-        return self.ctrl_range
+        return self.model.actuator_ctrlrange[:,1]
     
     def get_keyframe(self, name):
         return self.model.keyframe(name)
