@@ -93,10 +93,7 @@ if __name__ == "__main__":
 
     error_vector = shortest_error_quaternion(desired_q, current_q)
     print("Shortest error (rotation vector):", error_vector)
-
     
-    print("Shortest error (rotation vector):", error_vector)
-
     # # q_error = quaternion_multiply(quaternion_conjugate(current_q), desired_q)
     # q_error = quaternion_multiply(desired_q, quaternion_conjugate(current_q))
 
