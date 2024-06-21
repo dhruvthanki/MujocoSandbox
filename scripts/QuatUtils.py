@@ -29,7 +29,8 @@ def quaternion_to_rotation_vector(q:np.ndarray)->np.ndarray:
 
 def shortest_error_quaternion(desired_q:np.ndarray, current_q:np.ndarray)->np.ndarray:
     """ Compute the shortest error between two quaternions """
-    q_error = quaternion_multiply(quaternion_conjugate(current_q), desired_q)
+    # q_error = quaternion_multiply(quaternion_conjugate(current_q), desired_q)
+    q_error = quaternion_multiply(desired_q, quaternion_conjugate(current_q))
     rotation_vector = quaternion_to_rotation_vector(q_error)
     return rotation_vector
 
@@ -84,7 +85,8 @@ if __name__ == "__main__":
     error_vector = shortest_error_quaternion(desired_q, current_q)
     print("Shortest error (rotation vector):", error_vector)
 
-    q_error = quaternion_multiply(quaternion_conjugate(current_q), desired_q)
+    # q_error = quaternion_multiply(quaternion_conjugate(current_q), desired_q)
+    q_error = quaternion_multiply(desired_q, quaternion_conjugate(current_q))
 
     error_vector = quaternion_log_map(q_error)
     print("Error (rotation vector):", error_vector)
