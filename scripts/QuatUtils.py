@@ -79,8 +79,8 @@ def quaternion_to_log_vector(q):
 
 if __name__ == "__main__":
     # Example usage:
-    desired_q = np.array([0.0, 0.7071, 0.0, 0.7071])  # Example desired quaternion
-    current_q = np.array([0.0, 0.0, 0.0, 1.0])        # Example current quaternion
+    current_q = np.array([0.0, 0.7071, 0.0, 0.7071])  # Example desired quaternion
+    desired_q = np.array([0.0, 0.0, 0.0, 1.0])        # Example current quaternion
 
     error_vector = shortest_error_quaternion(desired_q, current_q)
     print("Shortest error (rotation vector):", error_vector)
