@@ -18,7 +18,7 @@ This project requires a Python virtual environment to manage dependencies. Follo
 
 2. **Create and set up the virtual environment**
 
-    Run the provided setup script to create a virtual environment named `MuJoCoSandBox` and install all dependencies from `requirements.txt`.
+    Run the provided setup script to create a virtual environment named `venv` and install all dependencies from `requirements.txt`.
 
     ```sh
     ./buildEnv.sh
