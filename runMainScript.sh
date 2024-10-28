@@ -1,1 +1,0 @@
-sudo -E ./MuJoCoSandBox/bin/python ./scripts/main.py

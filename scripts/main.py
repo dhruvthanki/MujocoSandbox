@@ -1,7 +1,9 @@
+import queue
+from overrides import overrides
+
 import mujoco
 import mujoco.viewer
-import keyboard
-from overrides import overrides
+import glfw
 
 from wholeBodyController import WholeBodyController
 from PeriodicExecutor import PeriodicExecutor
@@ -15,29 +17,34 @@ class Simulation(PeriodicExecutor):
         self.data = mujoco.MjData(self.model)
         self.data.qpos = self.model.keyframe('home').qpos
         mujoco.mj_forward(self.model, self.data)
-        if pause_at_start:
-            keyboard.add_hotkey('space', self.toggle_pause)
-        else:
-            self.toggle_pause()
-        self.viewer = mujoco.viewer.launch_passive(self.model, self.data)
+        self.viewer = mujoco.viewer.launch_passive(self.model, self.data, key_callback=lambda key: self.key_queue.put(key))
         self.controller = WholeBodyController(model_path)
-    
-    def toggle_pause(self):
-        self.is_paused = not self.is_paused
-        if self.is_paused:
-            print("Simulation paused.")
-        else:
-            print("Simulation resumed.")
+        self.key_queue = queue.Queue()
+
+    def keyboard_callback(self, key) -> None:
+        """
+        Method for the keyboard callback.
+        """
+        if key == glfw.KEY_SPACE:
+            self.is_paused = not self.is_paused
+            print("Simulation paused." if self.is_paused else "Simulation resumed.")
+        elif key == glfw.KEY_PERIOD:
+            print("Shoot! I just took a picture")
     
     @overrides
     def periodic_function(self):
-        if self.viewer.is_running() and not self.is_paused:
-            try:
-                # self.data.ctrl = -0.1 * self.data.qvel + 100 * (self.model.keyframe('home').qpos - self.data.qpos)
-                self.data.ctrl = self.controller.compute_joint_torques(self.data.qpos, self.data.qvel)
-            except Exception as e:
-                print(e)
-            mujoco.mj_step(self.model, self.data)
+        if self.viewer.is_running():
+            
+            while not self.key_queue.empty():
+                self.keyboard_callback(self.key_queue.get())
+
+            if not self.is_paused:    
+                try:
+                    # self.data.ctrl = -0.1 * self.data.qvel + 100 * (self.model.keyframe('home').qpos - self.data.qpos)
+                    self.data.ctrl = self.controller.compute_joint_torques(self.data.qpos, self.data.qvel)
+                except Exception as e:
+                    print(e)
+                mujoco.mj_step(self.model, self.data)
             
             # print(self.data.site_xpos[self.controller.dynamic_model.end_effector_id])
             # print(self.controller.dynamic_model.get_end_effector_ori())

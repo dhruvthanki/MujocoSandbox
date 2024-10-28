@@ -1,5 +1,5 @@
 # Ignore the virtual environment
-MuJoCoSandBox/
+venv/
 
 # Ignore Python cache files
 __pycache__/

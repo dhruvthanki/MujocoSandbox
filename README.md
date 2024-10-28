@@ -35,7 +35,7 @@ This project requires a Python virtual environment to manage dependencies. Follo
     - On Linux:
 
       ```sh
-      source MuJoCoSandBox/bin/activate
+      source .venv/bin/activate
       ```
 
 4. **Install dependencies**
